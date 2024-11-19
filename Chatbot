@@ -1,0 +1,73 @@
+# Install necessary libraries
+!pip install nltk
+
+# Import required libraries
+import nltk
+import numpy as np
+import random
+import string
+
+# Download NLTK packages
+nltk.download('punkt')
+nltk.download('wordnet')
+
+# Preprocessing functions
+from nltk.stem import WordNetLemmatizer
+lemmatizer = WordNetLemmatizer()
+
+def preprocess_text(text):
+    text = text.lower()  # Convert text to lowercase
+    text = nltk.word_tokenize(text)  # Tokenize text
+    text = [lemmatizer.lemmatize(word) for word in text if word not in string.punctuation]  # Lemmatize words
+    return text
+
+# Define intents and responses
+intents = {
+    "greetings": {
+        "patterns": ["hello", "hi", "greetings", "hey", "good morning", "good evening"],
+        "responses": ["Hello! How can I assist you today?", "Hi there! What can I do for you?", "Greetings! How may I help you?"]
+    },
+    "loan_queries": {
+        "patterns": ["tell me about loans", "how to apply for a loan", "loan interest rates", "loan eligibility"],
+        "responses": ["We offer personal and business loans. Interest rates start at 7%. Would you like to know more about a specific type of loan?",
+                      "You can apply for a loan through our website or at a nearby branch. Would you like assistance with that?"]
+    },
+    "account_queries": {
+        "patterns": ["how to open an account", "types of accounts", "minimum balance for accounts"],
+        "responses": ["We offer savings, current, and fixed deposit accounts. The minimum balance requirement starts at $500. Would you like more details?"]
+    },
+    "investment": {
+        "patterns": ["investment options", "mutual funds", "stock investments", "retirement planning"],
+        "responses": ["We provide guidance on mutual funds, stock investments, and retirement plans. How can I assist you further?"]
+    },
+    "farewell": {
+        "patterns": ["bye", "goodbye", "see you", "take care"],
+        "responses": ["Goodbye! Have a great day!", "See you soon!", "Take care!"]
+    },
+    "default": {
+        "responses": ["I'm sorry, I didn't understand that. Could you please rephrase?"]
+    }
+}
+
+# Function to match user input with intents
+def get_response(user_input):
+    user_input = preprocess_text(user_input)
+    for intent, intent_data in intents.items():
+        for pattern in intent_data.get("patterns", []):
+            if pattern in " ".join(user_input):
+                return random.choice(intent_data["responses"])
+    return random.choice(intents["default"]["responses"])
+
+# Chatbot loop
+def chatbot():
+    print("Finance Chatbot: Hello! I am here to assist you with your finance-related queries. Type 'exit' to end the chat.")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == "exit":
+            print("Finance Chatbot: Goodbye! Have a great day!")
+            break
+        response = get_response(user_input)
+        print(f"Finance Chatbot: {response}")
+
+# Run the chatbot
+chatbot()
